@@ -94,6 +94,12 @@ class FacebookAnalyticsPlugin : Plugin() {
         call.resolve()
     }
 
+    /* iOS only (the iPhone Settings shortcut for Apple's tracking switch). */
+    @PluginMethod
+    fun openAppSettings(call: PluginCall) {
+        call.unimplemented("openAppSettings is iOS only")
+    }
+
     @PluginMethod
     fun logEvent(call: PluginCall) {
         if (refuseWithoutConsent(call)) return

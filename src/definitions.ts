@@ -158,4 +158,7 @@ export interface FacebookAnalyticsPlugin {
 
   /** GymIsLife fork, iOS only: Apple's current tracking authorisation, without prompting. */
   getTrackingAuthorizationStatus(): Promise<{ status: 'authorized' | 'denied' | 'restricted' | 'notDetermined' }>;
+
+  /** GymIsLife fork, iOS only: open this app's page in iPhone Settings (where "Allow Tracking" lives). */
+  openAppSettings(): Promise<{ opened: boolean }>;
 }

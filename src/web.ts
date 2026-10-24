@@ -43,6 +43,10 @@ export class FacebookAnalyticsWeb extends WebPlugin implements FacebookAnalytics
     throw this.unimplemented('App Tracking Transparency is iOS only.');
   }
 
+  async openAppSettings(): Promise<{ opened: boolean }> {
+    throw this.unimplemented('openAppSettings is iOS only.');
+  }
+
   async getPluginVersion(): Promise<PluginVersionResult> {
     return {
       version: 'web',

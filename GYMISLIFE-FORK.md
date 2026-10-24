@@ -24,3 +24,5 @@ section 3.2 requires for the GymIsLife app binaries that include it.
   collection and (Android) auto-init back to false; iOS 15-16 also clears advertiser tracking.
 - **New `requestTrackingAuthorization()` / `getTrackingAuthorizationStatus()`** (iOS): Apple's App Tracking
   Transparency prompt, requested only while the app is active. It never initialises the Meta SDK.
+- **New `openAppSettings()`** (iOS, 8.1.19-gil.2): opens the app's page in iPhone Settings, where Apple's
+  "Allow Tracking" switch lives. Touches nothing in the Meta SDK. Android rejects it as unimplemented.

@@ -18,7 +18,8 @@ public class FacebookAnalyticsPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "getPluginVersion", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stopAppEvents", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "requestTrackingAuthorization", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getTrackingAuthorizationStatus", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "getTrackingAuthorizationStatus", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "openAppSettings", returnType: CAPPluginReturnPromise)
     ]
 
     private let implementation = FacebookAnalytics()
@@ -83,6 +84,20 @@ public class FacebookAnalyticsPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func getTrackingAuthorizationStatus(_ call: CAPPluginCall) {
         call.resolve(["status": Self.trackingStatusName(ATTrackingManager.trackingAuthorizationStatus)])
+    }
+
+    /* The app's own page in iPhone Settings, where its "Allow Tracking" switch lives - Apple asks apps to
+       offer this shortcut rather than an in-app switch for tracking. Touches nothing in the Meta SDK. */
+    @objc func openAppSettings(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            guard let url = URL(string: UIApplication.openSettingsURLString) else {
+                call.reject("Settings URL unavailable")
+                return
+            }
+            UIApplication.shared.open(url, options: [:]) { opened in
+                call.resolve(["opened": opened])
+            }
+        }
     }
 
     private static func trackingStatusName(_ status: ATTrackingManager.AuthorizationStatus) -> String {
