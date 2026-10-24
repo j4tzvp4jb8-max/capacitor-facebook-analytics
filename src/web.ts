@@ -31,6 +31,18 @@ export class FacebookAnalyticsWeb extends WebPlugin implements FacebookAnalytics
     };
   }
 
+  async stopAppEvents(): Promise<void> {
+    this.advertiserTrackingEnabled = false;
+  }
+
+  async requestTrackingAuthorization(): Promise<{ status: 'authorized' | 'denied' | 'restricted' | 'notDetermined' }> {
+    throw this.unimplemented('App Tracking Transparency is iOS only.');
+  }
+
+  async getTrackingAuthorizationStatus(): Promise<{ status: 'authorized' | 'denied' | 'restricted' | 'notDetermined' }> {
+    throw this.unimplemented('App Tracking Transparency is iOS only.');
+  }
+
   async getPluginVersion(): Promise<PluginVersionResult> {
     return {
       version: 'web',

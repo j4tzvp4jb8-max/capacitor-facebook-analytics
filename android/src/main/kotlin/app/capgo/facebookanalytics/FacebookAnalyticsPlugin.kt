@@ -21,6 +21,18 @@ class FacebookAnalyticsPlugin : Plugin() {
     private val implementation = FacebookAnalytics()
     private lateinit var logger: AppEventsLogger
 
+    /* GymIsLife fork (24 Oct 2026): consent-gated. Every logging call is refused until initAppEvents()
+       has run in this process, and the app calls that only after an explicit, stored yes. The SDK caches
+       these switches on the device and the cache wins over the manifest, so they are set explicitly here
+       and on stop rather than left to AndroidManifest defaults. */
+    @Volatile private var consented = false
+
+    private fun refuseWithoutConsent(call: PluginCall): Boolean {
+        if (consented) return false
+        call.reject("App Events are not started (no consent in this session)")
+        return true
+    }
+
     override fun load() {
         // Keep Capacitor registration side-effect free until Meta SDK metadata is configured.
     }
@@ -41,8 +53,12 @@ class FacebookAnalyticsPlugin : Plugin() {
                 object : FacebookSdk.InitializeCallback {
                     override fun onInitialized() {
                         try {
+                            FacebookSdk.setAutoLogAppEventsEnabled(false)
+                            FacebookSdk.setAdvertiserIDCollectionEnabled(true)
                             FacebookSdk.setAutoInitEnabled(true)
+                            FacebookSdk.fullyInitialize()
                             AppEventsLogger.activateApp(application)
+                            consented = true
                             call.resolve()
                         } catch (error: FacebookException) {
                             call.reject(error.message ?: "Failed to activate Facebook App Events")
@@ -55,8 +71,26 @@ class FacebookAnalyticsPlugin : Plugin() {
         }
     }
 
+    /* Withdrawal: no further events from this plugin, and auto-init, auto-logging and advertiser-ID
+       collection all written back to false in the SDK's on-device cache, so the next launch does not
+       initialise the SDK either. */
+    @PluginMethod
+    fun stopAppEvents(call: PluginCall) {
+        consented = false
+        try {
+            FacebookSdk.setAutoInitEnabled(false)
+            FacebookSdk.setAutoLogAppEventsEnabled(false)
+            FacebookSdk.setAdvertiserIDCollectionEnabled(false)
+        } catch (error: Exception) {
+            // The SDK was never initialised in this process: nothing is running, and the cache was
+            // never switched on by this plugin. Still a successful withdrawal.
+        }
+        call.resolve()
+    }
+
     @PluginMethod
     fun logEvent(call: PluginCall) {
+        if (refuseWithoutConsent(call)) return
         val event = call.getString("event")
 
         if (event.isNullOrBlank()) {
@@ -91,6 +125,7 @@ class FacebookAnalyticsPlugin : Plugin() {
 
     @PluginMethod
     fun logPurchase(call: PluginCall) {
+        if (refuseWithoutConsent(call)) return
         val amount = call.getDouble("amount")
         val currencyCode = call.getString("currency")
 
@@ -129,6 +164,7 @@ class FacebookAnalyticsPlugin : Plugin() {
 
     @PluginMethod
     fun enableAdvertiserTracking(call: PluginCall) {
+        if (refuseWithoutConsent(call)) return
         FacebookSdk.setAdvertiserIDCollectionEnabled(true)
         call.resolve()
     }

@@ -146,4 +146,16 @@ export interface FacebookAnalyticsPlugin {
    * Returns the platform implementation version marker.
    */
   getPluginVersion(): Promise<PluginVersionResult>;
+
+  /**
+   * GymIsLife fork: withdraw consent. Refuses all further events and writes auto-init (Android),
+   * auto-logging and advertiser-ID collection back to false in the SDK's on-device cache.
+   */
+  stopAppEvents(): Promise<void>;
+
+  /** GymIsLife fork, iOS only: show Apple's App Tracking Transparency prompt (waits until the app is active). */
+  requestTrackingAuthorization(): Promise<{ status: 'authorized' | 'denied' | 'restricted' | 'notDetermined' }>;
+
+  /** GymIsLife fork, iOS only: Apple's current tracking authorisation, without prompting. */
+  getTrackingAuthorizationStatus(): Promise<{ status: 'authorized' | 'denied' | 'restricted' | 'notDetermined' }>;
 }

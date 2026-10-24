@@ -11,7 +11,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0"),
-        .package(url: "https://github.com/facebook/facebook-ios-sdk.git", .upToNextMajor(from: "18.0.3"))
+        // GymIsLife fork (24 Oct 2026): pinned EXACTLY. 19.0.0 is the first release whose
+        // FacebookAutoLogAppEventsEnabled=false cannot be overridden from Events Manager, and the first
+        // with the FBSDKAutoLogMetaDataEnabled / FBSDKAutoLogProductImprovementEnabled opt-outs.
+        .package(url: "https://github.com/facebook/facebook-ios-sdk.git", exact: "19.0.0")
     ],
     targets: [
         .target(
