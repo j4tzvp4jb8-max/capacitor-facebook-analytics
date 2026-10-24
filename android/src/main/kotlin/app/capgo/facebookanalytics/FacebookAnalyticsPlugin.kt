@@ -54,6 +54,9 @@ class FacebookAnalyticsPlugin : Plugin() {
                     override fun onInitialized() {
                         try {
                             FacebookSdk.setAutoLogAppEventsEnabled(false)
+                            FacebookSdk.setAutoLogMetaDataEnabled(false)
+                            FacebookSdk.setAutoLogProductImprovementEnabled(false)
+                            FacebookSdk.setMonitorEnabled(false)
                             FacebookSdk.setAdvertiserIDCollectionEnabled(true)
                             FacebookSdk.setAutoInitEnabled(true)
                             FacebookSdk.fullyInitialize()
@@ -80,6 +83,9 @@ class FacebookAnalyticsPlugin : Plugin() {
         try {
             FacebookSdk.setAutoInitEnabled(false)
             FacebookSdk.setAutoLogAppEventsEnabled(false)
+            FacebookSdk.setAutoLogMetaDataEnabled(false)
+            FacebookSdk.setAutoLogProductImprovementEnabled(false)
+            FacebookSdk.setMonitorEnabled(false)
             FacebookSdk.setAdvertiserIDCollectionEnabled(false)
         } catch (error: Exception) {
             // The SDK was never initialised in this process: nothing is running, and the cache was

@@ -16,6 +16,10 @@ section 3.2 requires for the GymIsLife app binaries that include it.
 - **`initAppEvents()`** writes automatic logging OFF and advertiser-ID collection ON explicitly before
   activating (the SDK caches these switches on the device and the cache wins over Info.plist / the manifest).
   Android also follows Meta's delayed-init sequence: `setAutoInitEnabled(true)` then `fullyInitialize()`.
+- Both also write OFF the two 19.0.0 automatic streams - screen-title/AppLink metadata
+  (iOS `isMetaDataCollectionEnabled`, Android `setAutoLogMetaDataEnabled`) and product-improvement layout
+  sampling (`isAutoLogProductImprovementEnabled` / `setAutoLogProductImprovementEnabled`) - and, on Android,
+  SDK self-monitoring (`setMonitorEnabled`). The app's Info.plist / manifest set the same switches false.
 - **New `stopAppEvents()`** (withdrawal): refuses further events and writes automatic logging, advertiser-ID
   collection and (Android) auto-init back to false; iOS 15-16 also clears advertiser tracking.
 - **New `requestTrackingAuthorization()` / `getTrackingAuthorizationStatus()`** (iOS): Apple's App Tracking

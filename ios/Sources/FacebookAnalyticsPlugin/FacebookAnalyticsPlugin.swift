@@ -33,6 +33,8 @@ public class FacebookAnalyticsPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func initAppEvents(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             Settings.shared.isAutoLogAppEventsEnabled = false
+            Settings.shared.isMetaDataCollectionEnabled = false
+            Settings.shared.isAutoLogProductImprovementEnabled = false
             Settings.shared.isAdvertiserIDCollectionEnabled = true
             ApplicationDelegate.shared.initializeSDK()
             AppEvents.shared.activateApp()
@@ -49,6 +51,8 @@ public class FacebookAnalyticsPlugin: CAPPlugin, CAPBridgedPlugin {
         DispatchQueue.main.async {
             self.consented = false
             Settings.shared.isAutoLogAppEventsEnabled = false
+            Settings.shared.isMetaDataCollectionEnabled = false
+            Settings.shared.isAutoLogProductImprovementEnabled = false
             Settings.shared.isAdvertiserIDCollectionEnabled = false
             self.setAdvertiserTrackingEnabled(false)
             call.resolve()
