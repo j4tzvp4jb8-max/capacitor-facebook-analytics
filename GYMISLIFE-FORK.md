@@ -26,3 +26,6 @@ section 3.2 requires for the GymIsLife app binaries that include it.
   Transparency prompt, requested only while the app is active. It never initialises the Meta SDK.
 - **New `openAppSettings()`** (iOS, 8.1.19-gil.2): opens the app's page in iPhone Settings, where Apple's
   "Allow Tracking" switch lives. Touches nothing in the Meta SDK. Android rejects it as unimplemented.
+- **8.1.19-gil.3 (25 Oct 2026)**: `requestTrackingAuthorization` keeps its self-removing observer's token in a small
+  main-queue box instead of a captured `var`, clearing Xcode's "'token' mutated after capture by sendable closure"
+  warning. Behaviour unchanged, except the observer can no longer call `ask` twice.

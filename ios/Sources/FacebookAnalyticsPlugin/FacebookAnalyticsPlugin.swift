@@ -74,9 +74,15 @@ public class FacebookAnalyticsPlugin: CAPPlugin, CAPBridgedPlugin {
                 ask()
                 return
             }
-            var token: NSObjectProtocol?
-            token = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-                if let observer = token { NotificationCenter.default.removeObserver(observer) }
+            /* The observer removes itself on first fire. Its token lives in a box rather than a captured `var`:
+               Swift 6 warns that a `var` mutated after capture by a @Sendable closure is a data race. The box is
+               only touched on the main queue (this block and the observer's queue: .main), so it is safe to mark
+               @unchecked Sendable; clearing the token also guarantees `ask` runs once. */
+            let box = ObserverToken()
+            box.token = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+                guard let observer = box.token else { return }
+                NotificationCenter.default.removeObserver(observer)
+                box.token = nil
                 ask()
             }
         }
@@ -233,4 +239,9 @@ public class FacebookAnalyticsPlugin: CAPPlugin, CAPBridgedPlugin {
 
         return parameters.isEmpty ? nil : parameters
     }
+}
+
+/* Holds a NotificationCenter observer token for a self-removing observer (requestTrackingAuthorization). Main-queue only. */
+private final class ObserverToken: @unchecked Sendable {
+    var token: NSObjectProtocol?
 }
